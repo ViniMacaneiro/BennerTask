@@ -14,6 +14,17 @@ namespace TaskBenner
             Elements.Add(element1); Elements.Add(element2);
         }
 
+        public string ToStringElemments()
+        {
+            string sElements = string.Empty;
+            foreach (var ele in Elements)
+            {
+                sElements += ele.ToString() + "|";
+            }
+
+            return sElements;
+        }
+
         public bool VerifyElement(List<int> elements)
         {
             foreach (int element in elements)

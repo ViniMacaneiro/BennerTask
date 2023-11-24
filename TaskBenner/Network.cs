@@ -10,9 +10,9 @@ namespace TaskBenner
     {
         public List<Connection> Connections { get; set; } = new List<Connection>();
         private List<int> uniqueNumber = new List<int>();
-
+        private List<int> alreadySearched = new List<int>();
+        private List<Connection> AllQueryConnections { get; set; } = new List<Connection>();
         private int uniqueElementsLimit = -1;
-
         public Network(int listLength)
         {
             uniqueElementsLimit = listLength;
@@ -40,21 +40,23 @@ namespace TaskBenner
 
         public bool Query(int validateNumber1, int validateNumber2)
         {
+            VerifyIfNumbersAreInClassConnection(validateNumber1, validateNumber2);
             var connectionTested = new Connection(validateNumber1, validateNumber2);
-            var OccurrenceValidateNumber1 = GetConnectionByNumber(validateNumber1, Connections);
-            foreach (var validConnection in OccurrenceValidateNumber1)
-            {
-                if (validConnection.Elements.Contains(validateNumber2))
-                    return true;
-                else
+                var OccurrenceValidateNumber1 = GetConnectionByNumber(validateNumber1, Connections);
+                AddRangeConnectionWithoutDuplicity(OccurrenceValidateNumber1);
+                foreach (var validConnection in OccurrenceValidateNumber1)
                 {
-                    var otherElementConnection = validConnection.Elements.FirstOrDefault(n => n != validateNumber1);
-                    bool found = VerifyConnection(otherElementConnection, validateNumber2);
-                    if (found)
+                    if (validConnection.Elements.Contains(validateNumber2))
                         return true;
+                    else
+                    {
+                        var otherElementConnection = validConnection.Elements.FirstOrDefault(n => n != validateNumber1);
+                        bool found = VerifyConnection(otherElementConnection, validateNumber2);
+                        if (found)
+                            return true;
+                    }
                 }
-            }
-            return false;
+                return false;
         }
 
         public bool VerifyConnection(int validateElement, int validateNumber2)
@@ -65,21 +67,43 @@ namespace TaskBenner
                 if (connection.Elements.Contains(validateNumber2))
                     return true;
             }
-            
-            return false;
-        }
-
-
-        public bool verifyIfNumbersAreInClassConnection(Connection testConnection)
-        {
-            foreach (var verifyNumbers in Connections)
+            AddRangeConnectionWithoutDuplicity(tryVerificateConnection);
+            foreach (var allQueryConnection in AllQueryConnections)
             {
-                if (verifyNumbers.Elements == testConnection.Elements)
+                if (allQueryConnection.Elements.Contains(validateNumber2))
                     return true;
+            }
+            if (!alreadySearched.Contains(validateElement))
+            {
+                alreadySearched.Add(validateElement);
+                foreach (var connection in tryVerificateConnection)
+                {
+                    var otherElementConnection = connection.Elements.FirstOrDefault(e => e != validateElement);
+                    if (!alreadySearched.Contains(otherElementConnection))
+                    {
+                        var found = VerifyConnection(otherElementConnection, validateNumber2);
+                        if (found)
+                            return true;
+                    }
+                }
             }
             return false;
         }
 
+        public void AddRangeConnectionWithoutDuplicity(List<Connection> connections)
+        {
+            foreach (var connection in connections)
+            {
+                if (!AllQueryConnections.Any(a => a.ToStringElemments() == connection.ToStringElemments()))
+                    AllQueryConnections.Add(connection);
+            }
+        }
+
+        public void VerifyIfNumbersAreInClassConnection(int number1, int number2)
+        {
+            if (!Connections.Any(c => c.Elements.Contains(number1) || c.Elements.Contains(number2)))
+                throw new Exception("Informed numbers does not exist in main connection");
+        }
 
         public List<Connection> GetConnectionByNumber(int Number, List<Connection> connections)
         {
@@ -91,7 +115,5 @@ namespace TaskBenner
             }
             return result;
         }
-
-
     }
 }

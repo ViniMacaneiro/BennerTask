@@ -7,7 +7,7 @@ namespace UnitTest
     [TestClass]
     public class UnitTest1
     {
-       
+
         [TestMethod]
         public void TryExerciseDirectConnection()
         {
@@ -53,6 +53,7 @@ namespace UnitTest
         {
             Network test = new Network(8);
 
+
             test.Connect(1, 2);
             test.Connect(6, 2);
             test.Connect(2, 3);
@@ -67,6 +68,8 @@ namespace UnitTest
         public void TryExerciseNumberUniquesExceed()
         {
             Network test = new Network(8);
+            string error = string.Empty;
+
             try
             {
                 test.Connect(1, 2);
@@ -77,15 +80,18 @@ namespace UnitTest
             }
             catch (Exception e)
             {
+                error = e.Message;
                 Assert.AreEqual(e.Message, "Unique elements exceeded");
             }
-            
+
         }
 
         [TestMethod]
         public void TryExerciseNumberConnectionsExceed()
         {
             Network test = new Network(8);
+            string error = string.Empty;
+
             try
             {
                 test.Connect(1, 2);
@@ -96,7 +102,8 @@ namespace UnitTest
             }
             catch (Exception e)
             {
-                Assert.AreEqual(e.Message, "Connections already inserted");
+                error = e.Message;
+                Assert.AreEqual(error, "Connections already inserted");
             }
 
         }
@@ -106,6 +113,7 @@ namespace UnitTest
         public void TryExerciseNumberNotInConnections()
         {
             Network test = new Network(8);
+            string error = string.Empty;
             try
             {
                 test.Connect(1, 2);
@@ -116,8 +124,9 @@ namespace UnitTest
             }
             catch (Exception e)
             {
-                Assert.AreEqual(e.Message, "Informed numbers are not in Connections List");
+                error = e.Message;
             }
+            Assert.AreEqual(error, "Informed numbers does not exist in main connection");
 
         }
 
