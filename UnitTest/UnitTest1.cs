@@ -13,13 +13,16 @@ namespace UnitTest
             Network test = new Network(8);
 
             test.Connect(1, 2);
-            test.Connect(3, 4);
-            test.Connect(2, 5);
+            test.Connect(6, 2);
+            test.Connect(2, 4);
             test.Connect(5, 8);
 
-            Assert.IsTrue(test.Query(2, 5));
-            Assert.IsTrue(test.Query(5, 2));
-            Assert.IsFalse(test.Query(6, 7));
+            Assert.IsTrue(test.Query(1, 2));
+            Assert.IsTrue(test.Query(6, 4));
+            Assert.IsFalse(test.Query(8, 2));
+            //Assert.IsTrue(test.Query(2, 5));
+            //Assert.IsTrue(test.Query(5, 2));
+            //Assert.IsFalse(test.Query(6, 7));
             //Assert.IsFalse(test.Query(5, 7));
             //Assert.IsTrue(test.Query(1, 2));
             //Assert.IsTrue(test.Query(2, 5));

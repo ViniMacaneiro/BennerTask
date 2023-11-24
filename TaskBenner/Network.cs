@@ -22,17 +22,25 @@ namespace TaskBenner
         {
             var validateNumbers = new Connection(validateNumber1, validateNumber2);
 
+            List<List<List<int>>> list = new List<List<List<int>>>();
+            list.Capacity = validateNumbers.Elements.Count;
+            
             if (VerifyValidateNumbers(validateNumbers.Elements))
             {
-                foreach (var element in Connections)
+                for (var listNumber = 0; listNumber < list.Count; listNumber++)
                 {
-                    for (var i = 0; i < Connections.Count; i++)
+                    foreach (var number in validateNumbers.Elements)
                     {
-                    for (var j = 0; j < validateNumbers.Elements.Count; j++)
-                    {
-
-                    }
-
+                        for (int i = 0; i < Connections.Count; i++)
+                        {
+                            for (int j = 0; j < Connections[i].Count; j++)
+                            {
+                                if (Connections[i][j] == number)
+                                {
+                                    list[listNumber].Add(Connections[i]);
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -51,6 +59,20 @@ namespace TaskBenner
                         {
                             return true;
                         }
+                    }
+                }
+            }
+            return false;
+        }
+        public bool VerifyConnection(List<List<int>> list, int number)
+        {
+            for (var l = 0; l < list.Count; l++)
+            {
+                for (int k = 0; k < list[l].Count; k++)
+                {
+                    if (list[l][k] == number)
+                    {
+                        return true;
                     }
                 }
             }
