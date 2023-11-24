@@ -8,75 +8,90 @@ namespace TaskBenner
 {
     public class Network
     {
-        public List<List<int>> Connections { get; set; } = new List<List<int>>();
+        public List<Connection> Connections { get; set; } = new List<Connection>();
+        private List<int> uniqueNumber = new List<int>();
+
+        private int uniqueElementsLimit = -1;
+
         public Network(int listLength)
         {
-            Connections.Capacity = listLength;
+            uniqueElementsLimit = listLength;
         }
+
         public void Connect(int number1, int number2)
         {
+            ConnectValidation(number1, number2);
+
             var insertElements = new Connection(number1, number2);
-            Connections.Add(insertElements.Elements);
+            Connections.Add(insertElements);
         }
+
+        private void ConnectValidation(int number1, int number2)
+        {
+            if (!uniqueNumber.Contains(number1))
+                uniqueNumber.Add(number1);
+            if (!uniqueNumber.Contains(number2))
+                uniqueNumber.Add(number2);
+            if (uniqueNumber.Count > uniqueElementsLimit)
+                throw new Exception("Unique elements exceeded");
+            if (Connections.Any(c => c.Elements.Contains(number1) && c.Elements.Contains(number2)))
+                throw new Exception("Connections already inserted");
+        }
+
         public bool Query(int validateNumber1, int validateNumber2)
         {
-            var validateNumbers = new Connection(validateNumber1, validateNumber2);
-
-            List<List<List<int>>> list = new List<List<List<int>>>();
-            list.Capacity = validateNumbers.Elements.Count;
-            
-            if (VerifyValidateNumbers(validateNumbers.Elements))
+            var connectionTested = new Connection(validateNumber1, validateNumber2);
+            var OccurrenceValidateNumber1 = GetConnectionByNumber(validateNumber1, Connections);
+            foreach (var validConnection in OccurrenceValidateNumber1)
             {
-                for (var listNumber = 0; listNumber < list.Count; listNumber++)
+                if (validConnection.Elements.Contains(validateNumber2))
+                    return true;
+                else
                 {
-                    foreach (var number in validateNumbers.Elements)
-                    {
-                        for (int i = 0; i < Connections.Count; i++)
-                        {
-                            for (int j = 0; j < Connections[i].Count; j++)
-                            {
-                                if (Connections[i][j] == number)
-                                {
-                                    list[listNumber].Add(Connections[i]);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-        //Verifica se os numeros em valiação (validateNumber 1 e 2) existe na lista de conexões (Connections)
-        public bool VerifyValidateNumbers(List<int> elements)
-        {
-            for (var i = 0; i < Connections.Count; i++)
-            {
-                for (var j = 0; j < Connections[i].Count; j++)
-                {
-                    for (var k = 0; k < elements.Count; k++)
-                    {
-                        if (Connections[i][j] == elements[k])
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-        public bool VerifyConnection(List<List<int>> list, int number)
-        {
-            for (var l = 0; l < list.Count; l++)
-            {
-                for (int k = 0; k < list[l].Count; k++)
-                {
-                    if (list[l][k] == number)
-                    {
+                    var otherElementConnection = validConnection.Elements.FirstOrDefault(n => n != validateNumber1);
+                    bool found = VerifyConnection(otherElementConnection, validateNumber2);
+                    if (found)
                         return true;
-                    }
                 }
             }
             return false;
         }
+
+        public bool VerifyConnection(int validateElement, int validateNumber2)
+        {
+            List<Connection> tryVerificateConnection = GetConnectionByNumber(validateElement, Connections);
+            foreach (var connection in tryVerificateConnection)
+            {
+                if (connection.Elements.Contains(validateNumber2))
+                    return true;
+            }
+            
+            return false;
+        }
+
+
+        public bool verifyIfNumbersAreInClassConnection(Connection testConnection)
+        {
+            foreach (var verifyNumbers in Connections)
+            {
+                if (verifyNumbers.Elements == testConnection.Elements)
+                    return true;
+            }
+            return false;
+        }
+
+
+        public List<Connection> GetConnectionByNumber(int Number, List<Connection> connections)
+        {
+            List<Connection> result = new List<Connection>();
+            foreach (var connection in connections)
+            {
+                if (connection.Elements.Contains(Number))
+                    result.Add(connection);
+            }
+            return result;
+        }
+
+
     }
 }
